@@ -1,0 +1,12 @@
+D:\Git\QScanner\QScanner\bin\Release\QScanner.exe.config
+D:\Git\QScanner\QScanner\bin\Release\QScanner.exe
+D:\Git\QScanner\QScanner\bin\Release\QScanner.pdb
+D:\Git\QScanner\QScanner\bin\Release\Gma.System.MouseKeyHook.dll
+D:\Git\QScanner\QScanner\bin\Release\IronOcr.dll
+D:\Git\QScanner\QScanner\bin\Release\IronOcr.xml
+D:\Git\QScanner\QScanner\obj\Release\QScanner.Form1.resources
+D:\Git\QScanner\QScanner\obj\Release\QScanner.Properties.Resources.resources
+D:\Git\QScanner\QScanner\obj\Release\QScanner.csproj.GenerateResource.cache
+D:\Git\QScanner\QScanner\obj\Release\QScanner.csproj.CopyComplete
+D:\Git\QScanner\QScanner\obj\Release\QScanner.exe
+D:\Git\QScanner\QScanner\obj\Release\QScanner.pdb
