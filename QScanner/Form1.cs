@@ -112,7 +112,7 @@ namespace QScanner
             captureBitmap.Save(@".\Img.png", System.Drawing.Imaging.ImageFormat.Png);
 
             var img = new Bitmap(@".\Img.png");
-            var Ocr = new TesseractEngine("../../Tranning/tessdata", "eng",EngineMode.TesseractAndCube);
+            var Ocr = new TesseractEngine("../../Tranning/tessdata", "eng",EngineMode.Default);
             var Page = Ocr.Process(img);
           
             textBox1.BackColor = Color.FromArgb(255, 0, 0, 0);
