@@ -1,5 +1,4 @@
 ﻿using Gma.System.MouseKeyHook;
-using IronOcr;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Tesseract;
 
 namespace QScanner
 {
@@ -23,6 +23,8 @@ namespace QScanner
         private const int SWP_NOMOVE = 0x0002;
         private const int SWP_NOSIZE = 0x0001;
         private const int SWP_SHOWWINDOW = 0x0040;
+
+        private Form2 from2;
 
         private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
         private enum  MouseState
@@ -58,15 +60,7 @@ namespace QScanner
 
             this.Size = new Size(screenWidth, screenHeight);
 
-         
-            Button btn = new Button();
-            btn.Location = new Point(this.Width-100,20);
-            btn.Text = "Close";
-            btn.BackColor = Color.Red;
-            btn.Click += Btn_Click;
-            btn.Size = new Size(50, 50);
-            this.Controls.Add(btn);
-
+            this.panel1.Location = new Point(screenWidth - this.panel1.Size.Width, 0);
 
 
             mouseState = MouseState.Defaul;
@@ -77,10 +71,10 @@ namespace QScanner
 
 
         
-            this.BackColor = Color.White;
-            this.TransparencyKey = Color.White;
+            this.BackColor = Color.Red;
+            this.TransparencyKey = Color.Red;
 
-            Form from2 = new Form();
+             from2 = new Form2();
           
             from2.Location = this.Location;
             from2.Size = this.Size;
@@ -117,14 +111,16 @@ namespace QScanner
             g.CopyFromScreen(selectedBox.Left, selectedBox.Top, 0,0, selectedBox.Size);
             captureBitmap.Save(@".\Img.png", System.Drawing.Imaging.ImageFormat.Png);
 
+            var img = new Bitmap(@".\Img.png");
+            var Ocr = new TesseractEngine("../../Tranning/tessdata", "eng",EngineMode.TesseractAndCube);
+            var Page = Ocr.Process(img);
+          
+            textBox1.BackColor = Color.FromArgb(255, 0, 0, 0);
 
-            var Ocr = new AutoOcr();
-            var Result = Ocr.Read(@".\Img.png");
-            Console.WriteLine(Result.Text);
-            textBox1.BackColor = Color.Aqua;
             textBox1.Visible = true;
-            textBox1.Text = Result.Text;
-            
+            textBox1.Text = Page.GetText();
+
+
 
 
 
@@ -204,7 +200,7 @@ namespace QScanner
         {
 
          
-            g.Clear(Color.White);
+            g.Clear(Color.Red);
             Pen selPen = new Pen(Color.Blue);
             Brush brush = new SolidBrush(Color.FromArgb(20, 0, 0, 255));
             g.DrawRectangle(selPen,rect);
@@ -222,6 +218,12 @@ namespace QScanner
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
           
+        }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
+            this.from2.Close();
         }
     }
 }

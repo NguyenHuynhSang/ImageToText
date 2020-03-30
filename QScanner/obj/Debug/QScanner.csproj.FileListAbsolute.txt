@@ -1,0 +1,17 @@
+D:\Git\QScanner\ImageToText\QScanner\bin\Debug\QScanner.exe.config
+D:\Git\QScanner\ImageToText\QScanner\bin\Debug\QScanner.exe
+D:\Git\QScanner\ImageToText\QScanner\bin\Debug\QScanner.pdb
+D:\Git\QScanner\ImageToText\QScanner\bin\Debug\Gma.System.MouseKeyHook.dll
+D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.csprojAssemblyReference.cache
+D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.Form1.resources
+D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.Properties.Resources.resources
+D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.csproj.GenerateResource.cache
+D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.csproj.CopyComplete
+D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.exe
+D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.pdb
+D:\Git\QScanner\ImageToText\QScanner\bin\Debug\x86\liblept1753.dll
+D:\Git\QScanner\ImageToText\QScanner\bin\Debug\x86\libtesseract3052.dll
+D:\Git\QScanner\ImageToText\QScanner\bin\Debug\x64\liblept1753.dll
+D:\Git\QScanner\ImageToText\QScanner\bin\Debug\x64\libtesseract3052.dll
+D:\Git\QScanner\ImageToText\QScanner\bin\Debug\Tesseract.dll
+D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.Form3.resources
