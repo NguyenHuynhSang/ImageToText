@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -19,12 +20,13 @@ namespace QScanner
     {
         private IKeyboardMouseEvents m_GlobalHook;
         private Point pStartHover;
-        private Graphics g=null;
+        private Graphics g = null;
         private const int SWP_NOMOVE = 0x0002;
         private const int SWP_NOSIZE = 0x0001;
         private const int SWP_SHOWWINDOW = 0x0040;
         private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
-        private enum  MouseState
+        private static readonly String rootPath = @".\Img.png";
+        private enum MouseState
         {
             Defaul,
             StartDrag,
@@ -42,20 +44,20 @@ namespace QScanner
         private MouseState mouseState;
         public Form1()
         {
-        
+
             InitializeComponent();
-         //   this.TopMost = true;// fm always on top
+            //   this.TopMost = true;// fm always on top
             this.FormBorderStyle = FormBorderStyle.None;
 
-         // get window size
+            // get window size
             int screenWidth = SystemInformation.VirtualScreen.Width;
-            int screenHeight =SystemInformation.VirtualScreen.Height;
+            int screenHeight = SystemInformation.VirtualScreen.Height;
 
             this.Size = new Size(screenWidth, screenHeight);
 
             mouseState = MouseState.Defaul;
-            g = this.CreateGraphics();
-          
+
+
             Subscribe();
             this.FormClosing += Form1_FormClosing;
 
@@ -63,11 +65,11 @@ namespace QScanner
             this.TransparencyKey = Color.Red;
 
             this.tbxresult.Location = new Point(0, 0);
-            this.tbxresult.Size = new Size(screenWidth/2 - this.btnClose.Size.Width,screenHeight);
-            
-            this.btnClose.Location = new Point(this.tbxresult.Size.Width,this.btnClose.Location.Y);
+            this.tbxresult.Size = new Size(screenWidth / 2 - this.btnClose.Size.Width, screenHeight);
 
+            this.btnClose.Location = new Point(this.tbxresult.Size.Width, this.btnClose.Location.Y);
 
+         
         }
 
         public void Reset()
@@ -84,14 +86,14 @@ namespace QScanner
             // Note: for the application hook, use the Hook.AppEvents() instead
             m_GlobalHook = Hook.GlobalEvents();
 
-        
+
             m_GlobalHook.MouseDragStarted += M_GlobalHook_MouseDragStarted;
             this.m_GlobalHook.MouseDragFinished += M_GlobalHook_MouseDragFinished;
             this.m_GlobalHook.MouseMove += M_GlobalHook_MouseMove;
         }
         public void Unsubscribe()
         {
- 
+
             m_GlobalHook.MouseDragStarted -= M_GlobalHook_MouseDragStarted;
             m_GlobalHook.MouseDragFinished -= M_GlobalHook_MouseDragFinished;
             m_GlobalHook.MouseMove -= M_GlobalHook_MouseMove;
@@ -105,36 +107,36 @@ namespace QScanner
         /// </summary>
         void CaptureImage()
         {
-
+           
             if (selectedBox.Width <= 0 || selectedBox.Height <= 0)
             {
                 return;
             }
-            string startupPath = Environment.CurrentDirectory;
+            Console.WriteLine("CaptureImage: \t");
 
             Bitmap captureBitmap = new Bitmap(selectedBox.Width, selectedBox.Height, PixelFormat.Format32bppArgb);
-            g = Graphics.FromImage(captureBitmap);
-            g.CopyFromScreen(selectedBox.Left, selectedBox.Top, 0, 0, selectedBox.Size);
-            captureBitmap.Save(@".\Img.png", System.Drawing.Imaging.ImageFormat.Png);
-
-            var img = new Bitmap(@".\Img.png");
-
+            Graphics j = Graphics.FromImage(captureBitmap);
+            j.CopyFromScreen(selectedBox.Left, selectedBox.Top, 0, 0, selectedBox.Size);
+            captureBitmap.Save(rootPath, System.Drawing.Imaging.ImageFormat.Png);
 
             var Ocr = new TesseractEngine("../../Tranning/tessdata", "eng", EngineMode.TesseractAndLstm);
-            var Page = Ocr.Process(img);
+            var Page = Ocr.Process(captureBitmap);
 
             tbxresult.BackColor = Color.FromArgb(255, 0, 0, 0);
             string result = Page.GetText();
             result = result.Replace("\n", "\r\n");
-            
+
             tbxresult.Visible = true;
             tbxresult.Text = result;
+            Ocr.Dispose();
+            captureBitmap.Dispose();
+
+            j.Dispose();
 
         }
         public void DrawRectangle(System.Drawing.Rectangle rect)
         {
-
-
+          
             g.Clear(Color.Red);
             Pen selPen = new Pen(Color.Blue);
             Brush brush = new SolidBrush(Color.FromArgb(20, 0, 0, 255));
@@ -145,21 +147,22 @@ namespace QScanner
         private void M_GlobalHook_MouseMove(object sender, MouseEventArgs e)
 
         {
-            if (mouseState==MouseState.StartDrag)
+            if (mouseState == MouseState.StartDrag)
             {
+
                 selectedBox = new Rectangle(this.pStartHover.X, this.pStartHover.Y
-                                   , MousePosition.X-this.pStartHover.X, MousePosition.Y- this.pStartHover.Y);
+                                   , MousePosition.X - this.pStartHover.X, MousePosition.Y - this.pStartHover.Y);
                 DrawRectangle(selectedBox);
             }
-           
+
         }
 
         private void M_GlobalHook_MouseDragFinished(object sender, MouseEventArgs e)
         {
-            this.Opacity =0.9;
+            this.Opacity = 0.9;
             this.mouseState = MouseState.FinishDrag;
             g.Clear(Color.Red);
-          
+
             CaptureImage();
             Console.WriteLine("Finish Start: \t{0}");
         }
@@ -167,6 +170,8 @@ namespace QScanner
         private void M_GlobalHook_MouseDragStarted(object sender, MouseEventArgs e)
         {
             this.Opacity = 0.2;
+         
+           
             this.mouseState = MouseState.StartDrag;
             this.pStartHover = new Point(MousePosition.X, MousePosition.Y);
             Console.WriteLine("Draw Start: \t{0}");
@@ -179,7 +184,7 @@ namespace QScanner
 
 
 
-   
+
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             this.Unsubscribe();
@@ -192,8 +197,13 @@ namespace QScanner
 
         private void btnScan_Click(object sender, EventArgs e)
         {
-          
+
             this.Show();
+        }
+
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+            g = this.CreateGraphics();
         }
     }
 }
