@@ -14,3 +14,4 @@ D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.csproj.CopyComplete
 D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.exe
 D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.pdb
 D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.QScanner.resources
+D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.csprojAssemblyReference.cache

@@ -26,6 +26,7 @@ namespace QScanner
         private const int SWP_SHOWWINDOW = 0x0040;
         private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
         private static readonly String rootPath = @".\Img.png";
+        private TesseractEngine Orc;
         private enum MouseState
         {
             Defaul,
@@ -70,8 +71,8 @@ namespace QScanner
 
 
             this.btnClose.Location = new Point(this.tbxresult.Size.Width, this.btnClose.Location.Y);
-            
-         
+
+            this.Orc = new TesseractEngine("../../Tranning/tessdata", "eng", EngineMode.TesseractAndLstm);
         }
 
         public void Reset()
@@ -119,10 +120,9 @@ namespace QScanner
             Bitmap captureBitmap = new Bitmap(selectedBox.Width, selectedBox.Height, PixelFormat.Format32bppArgb);
             Graphics j = Graphics.FromImage(captureBitmap);
             j.CopyFromScreen(selectedBox.Left, selectedBox.Top, 0, 0, selectedBox.Size);
-            captureBitmap.Save(rootPath, System.Drawing.Imaging.ImageFormat.Png);
-
-            var Ocr = new TesseractEngine("../../Tranning/tessdata", "eng", EngineMode.TesseractAndLstm);
-            var Page = Ocr.Process(captureBitmap);
+          
+      
+            var Page = Orc.Process(captureBitmap);
 
             tbxresult.BackColor = Color.FromArgb(255, 0, 0, 0);
             string result = Page.GetText();
@@ -130,11 +130,11 @@ namespace QScanner
 
             tbxresult.Visible = true;
             tbxresult.Text = result;
-            Ocr.Dispose();
+
             captureBitmap.Dispose();
 
             j.Dispose();
-
+            Page.Dispose();
         }
         public void DrawRectangle(System.Drawing.Rectangle rect)
         {
