@@ -10,10 +10,10 @@ using System.Windows.Forms;
 
 namespace QScanner
 {
-    public partial class Form2 : Form
+    public partial class QScanner : Form
     {
         Form1 mainForm;
-        public Form2()
+        public QScanner()
         {
             InitializeComponent();
             
@@ -27,6 +27,7 @@ namespace QScanner
             int screenWidth = SystemInformation.VirtualScreen.Width;
             int screenHeight = SystemInformation.VirtualScreen.Height;
 
+            this.Location = new Point(screenWidth-this.Size.Width-100, (screenHeight-this.Size.Height)/2);
         }
 
         private void btnScan_Click(object sender, EventArgs e)

@@ -8,9 +8,9 @@ D:\Git\QScanner\ImageToText\QScanner\bin\Debug\QScanner.pdb
 D:\Git\QScanner\ImageToText\QScanner\bin\Debug\Gma.System.MouseKeyHook.dll
 D:\Git\QScanner\ImageToText\QScanner\bin\Debug\Tesseract.dll
 D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.Form1.resources
-D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.Form2.resources
 D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.Properties.Resources.resources
 D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.csproj.GenerateResource.cache
 D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.csproj.CopyComplete
 D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.exe
 D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.pdb
+D:\Git\QScanner\ImageToText\QScanner\obj\Debug\QScanner.QScanner.resources

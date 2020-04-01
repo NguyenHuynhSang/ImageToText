@@ -1,6 +1,6 @@
 ﻿namespace QScanner
 {
-    partial class Form2
+    partial class QScanner
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form2));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(QScanner));
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnScan = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
@@ -73,7 +73,7 @@
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
-            // Form2
+            // QScanner
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -81,8 +81,8 @@
             this.ClientSize = new System.Drawing.Size(167, 420);
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Name = "Form2";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Name = "QScanner";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Form2";
             this.Load += new System.EventHandler(this.Form2_Load);
             this.panel1.ResumeLayout(false);

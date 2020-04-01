@@ -67,8 +67,10 @@ namespace QScanner
             this.tbxresult.Location = new Point(0, 0);
             this.tbxresult.Size = new Size(screenWidth / 2 - this.btnClose.Size.Width, screenHeight);
 
-            this.btnClose.Location = new Point(this.tbxresult.Size.Width, this.btnClose.Location.Y);
 
+
+            this.btnClose.Location = new Point(this.tbxresult.Size.Width, this.btnClose.Location.Y);
+            
          
         }
 
