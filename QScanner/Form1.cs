@@ -23,9 +23,6 @@ namespace QScanner
         private const int SWP_NOMOVE = 0x0002;
         private const int SWP_NOSIZE = 0x0001;
         private const int SWP_SHOWWINDOW = 0x0040;
-
-        private Form2 from2;
-
         private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
         private enum  MouseState
         {
@@ -47,117 +44,122 @@ namespace QScanner
         {
         
             InitializeComponent();
-              this.TopMost = true;// fm always on top
+         //   this.TopMost = true;// fm always on top
             this.FormBorderStyle = FormBorderStyle.None;
 
-            Rectangle rect = new Rectangle(int.MaxValue, int.MaxValue, int.MinValue, int.MinValue);
-
-            
-            
-
+         // get window size
             int screenWidth = SystemInformation.VirtualScreen.Width;
             int screenHeight =SystemInformation.VirtualScreen.Height;
 
             this.Size = new Size(screenWidth, screenHeight);
 
-            this.panel1.Location = new Point(screenWidth - this.panel1.Size.Width, 0);
-
-
             mouseState = MouseState.Defaul;
             g = this.CreateGraphics();
           
             Subscribe();
-           this.FormClosing += Form1_FormClosing;
+            this.FormClosing += Form1_FormClosing;
 
-
-        
             this.BackColor = Color.Red;
             this.TransparencyKey = Color.Red;
 
-             from2 = new Form2();
-          
-            from2.Location = this.Location;
-            from2.Size = this.Size;
-            from2.Opacity = 0.01;
-            from2.Show();
-         
-            this.ShowDialog();
+            this.tbxresult.Location = new Point(0, 0);
+            this.tbxresult.Size = new Size(screenWidth/2 - this.btnClose.Size.Width,screenHeight);
+            
+            this.btnClose.Location = new Point(this.tbxresult.Size.Width,this.btnClose.Location.Y);
+
 
         }
 
-        private void Btn_Click(object sender, EventArgs e)
+        public void Reset()
         {
-            this.Close();
+            this.tbxresult.Text = "";
+            this.tbxresult.Hide();
         }
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            this.Unsubscribe();
-        }
-
-        void CaptureImage()
-        {
-            this.Opacity = 0.5;
-            if (selectedBox.Width<=0||selectedBox.Height<=0)
-            {
-                return;
-            }
-            string startupPath = Environment.CurrentDirectory;
-
-            Console.WriteLine("Cap: \t{0} y {1}", selectedBox.Width, selectedBox.Height);
-            Console.WriteLine("Left top: \t{0} y {1}", selectedBox.Left, selectedBox.Top);
-            Bitmap captureBitmap = new Bitmap(selectedBox.Width, selectedBox.Height, PixelFormat.Format32bppArgb);
-             g = Graphics.FromImage(captureBitmap);
-            g.CopyFromScreen(selectedBox.Left, selectedBox.Top, 0,0, selectedBox.Size);
-            captureBitmap.Save(@".\Img.png", System.Drawing.Imaging.ImageFormat.Png);
-
-            var img = new Bitmap(@".\Img.png");
-            var Ocr = new TesseractEngine("../../Tranning/tessdata", "eng",EngineMode.Default);
-            var Page = Ocr.Process(img);
-          
-            textBox1.BackColor = Color.FromArgb(255, 0, 0, 0);
-
-            textBox1.Visible = true;
-            textBox1.Text = Page.GetText();
-
-
-
-
-
-        }
-
+        /// <summary>
+        /// Subscribe and Unsubscribe mouse event
+        /// </summary>
         public void Subscribe()
         {
             // Note: for the application hook, use the Hook.AppEvents() instead
             m_GlobalHook = Hook.GlobalEvents();
 
-            m_GlobalHook.MouseDownExt += GlobalHookMouseDownExt;
-            m_GlobalHook.KeyPress += GlobalHookKeyPress;
+        
             m_GlobalHook.MouseDragStarted += M_GlobalHook_MouseDragStarted;
             this.m_GlobalHook.MouseDragFinished += M_GlobalHook_MouseDragFinished;
             this.m_GlobalHook.MouseMove += M_GlobalHook_MouseMove;
         }
+        public void Unsubscribe()
+        {
+ 
+            m_GlobalHook.MouseDragStarted -= M_GlobalHook_MouseDragStarted;
+            m_GlobalHook.MouseDragFinished -= M_GlobalHook_MouseDragFinished;
+            m_GlobalHook.MouseMove -= M_GlobalHook_MouseMove;
+            //It is recommened to dispose it
+            m_GlobalHook.Dispose();
+        }
+
+
+        /// <summary>
+        /// Capture image on scene and OCR here
+        /// </summary>
+        void CaptureImage()
+        {
+
+            if (selectedBox.Width <= 0 || selectedBox.Height <= 0)
+            {
+                return;
+            }
+            string startupPath = Environment.CurrentDirectory;
+
+            Bitmap captureBitmap = new Bitmap(selectedBox.Width, selectedBox.Height, PixelFormat.Format32bppArgb);
+            g = Graphics.FromImage(captureBitmap);
+            g.CopyFromScreen(selectedBox.Left, selectedBox.Top, 0, 0, selectedBox.Size);
+            captureBitmap.Save(@".\Img.png", System.Drawing.Imaging.ImageFormat.Png);
+
+            var img = new Bitmap(@".\Img.png");
+
+
+            var Ocr = new TesseractEngine("../../Tranning/tessdata", "eng", EngineMode.TesseractAndLstm);
+            var Page = Ocr.Process(img);
+
+            tbxresult.BackColor = Color.FromArgb(255, 0, 0, 0);
+            string result = Page.GetText();
+            result = result.Replace("\n", "\r\n");
+            
+            tbxresult.Visible = true;
+            tbxresult.Text = result;
+
+        }
+        public void DrawRectangle(System.Drawing.Rectangle rect)
+        {
+
+
+            g.Clear(Color.Red);
+            Pen selPen = new Pen(Color.Blue);
+            Brush brush = new SolidBrush(Color.FromArgb(20, 0, 0, 255));
+            g.DrawRectangle(selPen, rect);
+            g.FillRectangle(brush, rect);
+        }
+
         private void M_GlobalHook_MouseMove(object sender, MouseEventArgs e)
 
         {
             if (mouseState==MouseState.StartDrag)
             {
-                Console.WriteLine("Draw: \t{0}");
                 selectedBox = new Rectangle(this.pStartHover.X, this.pStartHover.Y
                                    , MousePosition.X-this.pStartHover.X, MousePosition.Y- this.pStartHover.Y);
                 DrawRectangle(selectedBox);
-                Console.WriteLine("pos: \t{0} y {1}",MousePosition.X,MousePosition.Y );
             }
-          //  this.mouseState = MouseState.Move;
            
         }
 
         private void M_GlobalHook_MouseDragFinished(object sender, MouseEventArgs e)
         {
-            this.Opacity =1;
+            this.Opacity =0.9;
             this.mouseState = MouseState.FinishDrag;
-            g.Clear(Color.White);
-            // g.Clear(Color.White);
+            g.Clear(Color.Red);
+          
             CaptureImage();
             Console.WriteLine("Finish Start: \t{0}");
         }
@@ -165,65 +167,33 @@ namespace QScanner
         private void M_GlobalHook_MouseDragStarted(object sender, MouseEventArgs e)
         {
             this.Opacity = 0.2;
-          //  this.textBox1.Visible = false;
             this.mouseState = MouseState.StartDrag;
             this.pStartHover = new Point(MousePosition.X, MousePosition.Y);
             Console.WriteLine("Draw Start: \t{0}");
         }
 
-        private void GlobalHookKeyPress(object sender, KeyPressEventArgs e)
+
+
+
+
+
+
+
+   
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Console.WriteLine("KeyPress: \t{0}", e.KeyChar);
-        }
-
-
-        private void GlobalHookMouseDownExt(object sender, MouseEventExtArgs e)
-        {
-            Console.WriteLine("MouseDown: \t{0}; \t System Timestamp: \t{1}", e.Button, e.Timestamp);
-
-            // uncommenting the following line will suppress the middle mouse button click
-            // if (e.Buttons == MouseButtons.Middle) { e.Handled = true; }
-        }
-
-        public void Unsubscribe()
-        {
-            m_GlobalHook.MouseDownExt -= GlobalHookMouseDownExt;
-            m_GlobalHook.KeyPress -= GlobalHookKeyPress;
-            m_GlobalHook.MouseDragStarted -= M_GlobalHook_MouseDragStarted;
-            m_GlobalHook.MouseDragFinished-= M_GlobalHook_MouseDragFinished;
-            m_GlobalHook.MouseMove -= M_GlobalHook_MouseMove;
-            //It is recommened to dispose it
-            m_GlobalHook.Dispose();
-        }
-
-        public void DrawRectangle(System.Drawing.Rectangle rect)
-        {
-
-         
-            g.Clear(Color.Red);
-            Pen selPen = new Pen(Color.Blue);
-            Brush brush = new SolidBrush(Color.FromArgb(20, 0, 0, 255));
-            g.DrawRectangle(selPen,rect);
-            g.FillRectangle(brush, rect);
-        }
-
-        private void Form1_MouseClick(object sender, MouseEventArgs e)
-        {
-            Console.WriteLine("Form clicked");
-        }
-
-     
- 
-
-        private void Form1_Paint(object sender, PaintEventArgs e)
-        {
-          
+            this.Unsubscribe();
         }
 
         private void btnClose_Click(object sender, EventArgs e)
         {
-            this.Close();
-            this.from2.Close();
+            this.Hide();
+        }
+
+        private void btnScan_Click(object sender, EventArgs e)
+        {
+          
+            this.Show();
         }
     }
 }
